@@ -162,6 +162,8 @@ const App = () => {
   )
 }
 */
+
+/* 1.4
 const Button = (props) => (
   <button onClick={props.handleClick}>
     {props.text}
@@ -193,16 +195,147 @@ const App = () => {
       <button onClick={hello('world')}>button</button>
       <button onClick={hello('react')}>button</button>
       <button onClick={hello('world')}>button</button>
-      {/* <button onClick={setToValue(1000)}>thousand</button>
+      <button onClick={setToValue(1000)}>thousand</button>
       <button onClick={setToValue(0)}>reset</button>
-      <button onClick={setToValue(value + 1)}>increment</button> */}
+      <button onClick={setToValue(value + 1)}>increment</button>
       <Button handleClick={() => setToValue(1000)} text="thousand" />
       <Button handleClick={() => setToValue(0)} text="reset" />
       <Button handleClick={() => setToValue(value + 1)} text="increment" />
     </div>
   )
 }
+*/
+
+/* exercise 1.1 - 1.11
+const Button = (props) => (
+  <button onClick={props.handleClick}>{props.text}</button>
+)
+const Statistics = (props) => {
+  if (!(props.good || props.neutral || props.bad)) {
+    return <div>No feedback given</div>
+  }
+
+  const all = props.good + props.neutral + props.bad
+  const average = (props.good - props.bad) / all || 0
+  const positive = (props.good / all) * 100 || 0
+  return (
+    <div>
+      <table>
+        <tbody>
+          <tr>
+            <td>good</td>
+            <td>{props.good}</td>
+          </tr>
+          <tr>
+            <td>netural</td>
+            <td>{props.neutral}</td>
+          </tr>
+          <tr>
+            <td>bad</td>
+            <td>{props.bad}</td>
+          </tr>
+          <tr>
+            <td>all</td>
+            <td>{all}</td>
+          </tr>
+          <tr>
+            <td>average</td>
+            <td>{average}</td>
+          </tr>
+          <tr>
+            <td>positive</td>
+            <td>{positive}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+
+const App = () => {
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
+  const setToValue = (val, level) => () => {
+    switch(level) {
+      case 'good': setGood(val); break
+      case 'netural': setNeutral(val); break
+      case 'bad': setBad(val); break
+    }
+  }
+
+  return (
+    <div>
+      <h2>give feedback</h2>
+      <Button handleClick={setToValue(good + 1, 'good')} text='good' />
+      <Button handleClick={setToValue(neutral + 1, 'netural')} text='netural' />
+      <Button handleClick={setToValue(bad + 1, 'bad')} text='bad' />
+
+      <h2>statistics</h2>
+      <Statistics good={good} neutral={neutral} bad={bad} />
+    </div>
+  )
+}
+
+*/
+const Top = (props) => {
+  return (
+    <div>
+      {props.top.anecdote}
+      <div>has {props.top.votes} votes</div>
+    </div>
+  )
+}
+
+const App = (props) => {
+  const [selected, setSelected] = useState(0)
+  let topIndex = 0
+  for (const index in votes) {
+    if (votes[index] > votes[topIndex]) {
+      topIndex = index
+    }    
+  }
+
+  const top = { votes: props.votes[topIndex], anecdote: props.anecdotes[topIndex] }
+
+  const handleClick = () => {
+    setSelected(Math.floor(Math.random() * anecdotes.length))
+  }
+
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      {props.anecdotes[selected]}
+      <div>has {props.votes[selected]} votes</div>
+      <div>
+        <button onClick={doVote(selected)}>vote</button>
+        <button onClick={handleClick}>next anecdote</button>
+      </div>
+
+      <h1>Anecdote with most votes</h1>
+      <Top top={top} />
+    </div>
+  )
+}
+
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+]
+const points = {}
+anecdotes.map((anecdote, index) => points[index] = 0)
+const votes = { ...points }
+
+const doVote = (selected) => () => votes[selected] += 1
+
+
 ReactDOM.render(
-  <App />,
+  <App anecdotes={anecdotes} votes={votes} />,
   document.getElementById('root')
 )
