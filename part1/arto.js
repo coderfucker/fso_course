@@ -6,4 +6,5 @@ const arto = {
 }
 
 arto.greet()
+setTimeout(arto.greet)
 setTimeout(arto.greet.bind(arto))
