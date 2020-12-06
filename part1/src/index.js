@@ -280,42 +280,52 @@ const App = () => {
 }
 
 */
-const Top = (props) => {
+const Anecdote = ({ text, votes=0 }) => {
   return (
-    <div>
-      {props.top.anecdote}
-      <div>has {props.top.votes} votes</div>
-    </div>
+    <div>    
+      <div>
+        {text}
+      </div>
+      <div>
+        has {votes} votes
+      </div>
+    </div>    
   )
 }
-
 const App = (props) => {
   const [selected, setSelected] = useState(0)
-  let topIndex = 0
-  for (const index in votes) {
-    if (votes[index] > votes[topIndex]) {
-      topIndex = index
-    }    
+  const [votes, setVotes] = useState({})
+  const [mostVotes, setMostVotes] = useState(0)
+
+  const next = () => {
+    let random = Math.floor(Math.random() * anecdotes.length)
+    while (random === selected) {
+      random = Math.floor(Math.random() * anecdotes.length)
+    }
+    setSelected(random)
   }
 
-  const top = { votes: props.votes[topIndex], anecdote: props.anecdotes[topIndex] }
+  console.log('smida--->', votes)
+  const vote = () => {
+    const seletedVoteCount = votes[selected] || 0
+    setVotes({
+      ...votes,
+      [selected]: seletedVoteCount + 1
+    })
 
-  const handleClick = () => {
-    setSelected(Math.floor(Math.random() * anecdotes.length))
+    if (!votes[mostVotes] || seletedVoteCount + 1 > votes[mostVotes]) {
+      setMostVotes(selected)
+    }
   }
 
   return (
     <div>
-      <h1>Anecdote of the day</h1>
-      {props.anecdotes[selected]}
-      <div>has {props.votes[selected]} votes</div>
-      <div>
-        <button onClick={doVote(selected)}>vote</button>
-        <button onClick={handleClick}>next anecdote</button>
-      </div>
-
-      <h1>Anecdote with most votes</h1>
-      <Top top={top} />
+      <h2>Anecdote of the day</h2>
+      <Anecdote text={props.anecdotes[selected]} votes={votes[selected]} />
+      <button onClick={vote}>vote</button>
+      <button onClick={next}>next anecdote</button>
+      <h2>Anecdote with most votes</h2>
+      <Anecdote text={props.anecdotes[mostVotes]} votes={votes[mostVotes]} />
     </div>
   )
 }
@@ -328,14 +338,8 @@ const anecdotes = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
-const points = {}
-anecdotes.map((anecdote, index) => points[index] = 0)
-const votes = { ...points }
-
-const doVote = (selected) => () => votes[selected] += 1
-
 
 ReactDOM.render(
-  <App anecdotes={anecdotes} votes={votes} />,
+  <App anecdotes={anecdotes} />,
   document.getElementById('root')
 )
