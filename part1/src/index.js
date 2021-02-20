@@ -305,7 +305,6 @@ const App = (props) => {
     setSelected(random)
   }
 
-  console.log('smida--->', votes)
   const vote = () => {
     const seletedVoteCount = votes[selected] || 0
     setVotes({
