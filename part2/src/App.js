@@ -30,8 +30,12 @@ const App = (props) => {
       id: notes.length + 1
     }
 
-    setNotes(notes.concat(noteObject))
-    setNewNote('a new note...')
+    axios
+      .post('http://localhost:3001/notes', noteObject)
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote('a new note...')
+      })
   }
 
   const handleNoteChange = (event) => {
