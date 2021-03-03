@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import noteService from './services/notes'
 import Note from './components/Note'
 
-const App = (props) => {
+const App = () => {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
@@ -14,8 +14,8 @@ const App = (props) => {
       console.log('promise fullfilled')
       setNotes(response.data)
     }
-    const promise = axios.get('http://localhost:3001/notes')
-    promise.then(eventHandler)
+
+    noteService.getAll().then(eventHandler)
   }
   useEffect(hook, [])
 
@@ -30,11 +30,22 @@ const App = (props) => {
       id: notes.length + 1
     }
 
-    axios
-      .post('http://localhost:3001/notes', noteObject)
+    noteService 
+      .create(noteObject)
       .then(response => {
         setNotes(notes.concat(response.data))
         setNewNote('a new note...')
+      })
+  }
+
+  const toggleImportanceOf = (id) => {
+    const note = notes.find(n => n.id === id)
+    const changedNote = { ...note, important: !note.important }
+
+    noteService
+      .update(id, changedNote)
+      .then(response => {
+        setNotes(notes.map(note => note.id !== id ? note : response.data))
       })
   }
 
@@ -57,7 +68,11 @@ const App = (props) => {
       </div>
       <ul>
         {notesToShow.map(note =>
-          <Note key={note.id} note={note} />
+          <Note
+            key={note.id}
+            note={note}
+            toggleImportance={() => toggleImportanceOf(note.id)}
+          />
         )}
       </ul>
 
